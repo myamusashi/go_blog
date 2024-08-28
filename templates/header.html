@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>{{ .Title }}</title>
+        <meta name="description" content="{{ .MetaDescription }}" />
+        <meta property="og:title" content="{{ .MetaPropertyTitle }}" />
+        <meta property="og:description" content="{{ .MetaPropertyDescription }}" />
+        <meta property="og:url" content="{{ .MetaOgURL }}" />
+        <link href="../static/css/style.css" rel="stylesheet" />
+        <link
+            href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+            rel="stylesheet"
+        />
+        <link href="https://unpkg.com/tailwindcss@^1.0/dist/tailwind.min.css" rel="stylesheet" />
+    </head>
+    <body>
+        <header class="navbar">
+            <a style="text-decoration: none; font-size: 30px">gilang blog</a>
+            <h5>Nothing just blog</h5>
+            <div class="icon_pack">
+                <a href="https://myamusashi.my.id">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        fill="currentColor"
+                        viewBox="0 0 24 24"
+                        class="w-8 h-8 text-white hover:text-gray-500 transition-colors duration-300"
+                    >
+                        <path
+                            d="M9 21H4C3.44772 21 3 20.5523 3 20V12.4142C3 12.149 3.10536 11.8946 3.29289 11.7071L11.2929 3.70711C11.6834 3.31658 12.3166 3.31658 12.7071 3.70711L20.7071 11.7071C20.8946 11.8946 21 12.149 21 12.4142V20C21 20.5523 20.5523 21 20 21H15M9 21H15M9 21V15C9 14.4477 9.44772 14 10 14H14C14.5523 14 15 14.4477 15 15V21"
+                        />
+                    </svg>
+                </a>
+                <a href="https://github.com/myamusashi">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        fill="currentColor"
+                        class="w-6 h-6 text-white hover:text-gray-500 transition-colors duration-300"
+                    >
+                        <path
+                            d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.438 9.8 8.207 11.387.6.112.793-.26.793-.577v-2.172c-3.338.724-4.042-1.61-4.042-1.61-.546-1.387-1.333-1.757-1.333-1.757-1.09-.745.082-.73.082-.73 1.204.084 1.838 1.236 1.838 1.236 1.07 1.834 2.805 1.303 3.49.995.108-.774.418-1.304.76-1.603-2.667-.303-5.466-1.334-5.466-5.93 0-1.31.468-2.382 1.235-3.22-.124-.303-.535-1.523.117-3.176 0 0 1.008-.323 3.3 1.23.957-.266 1.983-.399 3.005-.404 1.02.005 2.048.138 3.008.404 2.29-1.553 3.296-1.23 3.296-1.23.653 1.653.242 2.873.118 3.176.77.838 1.233 1.91 1.233 3.22 0 4.61-2.805 5.623-5.476 5.92.43.37.814 1.102.814 2.222v3.293c0 .318.19.694.8.576C20.565 21.795 24 17.295 24 12 24 5.37 18.63 0 12 0z"
+                        />
+                    </svg>
+                </a>
+            </div>
+        </header>
+    </body>
+</html>

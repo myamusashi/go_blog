@@ -1,0 +1,55 @@
+{{ template "header.html" . }}
+<body>
+    <!-- Blog Post -->
+    <main>
+        <div class="container mx-auto mt-8">
+            <a href="http://localhost:8080/">
+                <svg
+                    class="w-8 h-8 text-gray-500 hover:text-blue-500 transition-colors duration-300 mx-auto"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
+                    >
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M15 19l-7-7 7-7"
+                    />
+        </svg>
+            </a>
+                <article class="prose lg:prose-xl p-8 rounded-lg shadow-md">
+                        <h1 class="text-white font-bold text-5xl mb-2">{{ .Title }}</h1>
+                        {{with .Author }}
+                                <div id="author_name" class="mb-6">
+                                        <p class="text-gray-500">Author: <a class="no-underline text-white hover:text-blue-300" href="mailto:{{ .Email }}">{{ .Name }}</a></p>
+                                </div>
+                        {{ end }}
+                        <div class="text-white text-base">
+                                {{ .Content }}
+                        </div>
+                </article>
+        </div>
+    </main>
+    {{ template "footer.html" . }}
+
+    <style>
+    p {
+        margin-bottom: 0.5em;
+    }
+    h2 {
+        margin-top: 2rem;
+        margin-bottom: 2rem;
+        font-size: 2em;
+    }
+    </style>
+
+    <script>
+        // Toggle mobile menu
+        document.getElementById('mobile-menu-button').onclick = function() {
+            document.getElementById('mobile-menu').classList.toggle('hidden');
+        }
+    </script>
+</body>
+</html>

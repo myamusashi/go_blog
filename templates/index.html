@@ -1,0 +1,43 @@
+{{ template "header.html" . }}
+
+<main class="container mx-auto mt-6">
+    <div class="flex flex-col-reverse items-center">
+        {{ range .Posts }}
+        <div
+            onclick="window.location.href='/posts/{{ .Slug }}'"
+            class="w-6/12 mb-6 p-5 transition-colors duration-300 postcard"
+        >
+            <article>
+                <h2 class="text-white text-3xl mb-3">{{ .Title }}</h2>
+                <p class="text-gray-500 ml-3 text-base text-pretty line-clamp">
+                    {{ .Description }}
+                </p>
+                <hr class="h-px my-6 border-blue-600" />
+                <div class="flex justify-between">
+                    <h4 class="text-gray-500 font-semibold">Author: {{ .Author.Name }}</h4>
+                    <h6 class="text-gray-300">2024-08-28</h6>
+                </div>
+            </article>
+        </div>
+        {{ end }}
+    </div>
+    <style>
+        .postcard {
+            background: #181825;
+            border: 1px solid blue;
+            cursor: pointer;
+        }
+        .postcard:hover {
+            background: #3e3f4f;
+            border: 1px solid skyblue;
+        }
+        .line-clamp {
+            display: -webkit-box;
+            -webkit-line-clamp: 3; /* Number of lines */
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+    </style>
+</main>
+
+{{ template "footer.html" . }}
