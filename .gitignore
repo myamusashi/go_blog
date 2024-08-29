@@ -1,6 +1,7 @@
 main
 .env
 node_modules/
+static/css/output.css
 go_blog
 server
 temp/
