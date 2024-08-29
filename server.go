@@ -15,17 +15,17 @@ import (
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
 	"github.com/yuin/goldmark/extension"
-	"github.com/yuin/goldmark/parser"
 	"gopkg.in/yaml.v2"
 )
 
 func main() {
-	mtx := gin.Default()
+	gin.SetMode(gin.ReleaseMode)
+	route := gin.Default()
 
-	mtx.LoadHTMLGlob("templates/*")
+	route.LoadHTMLGlob("templates/*")
 
-	mtx.GET("/posts/:slug", PostHandler(FileReader{}))
-	mtx.GET("/", func(ctx *gin.Context) {
+	route.GET("/posts/:slug", PostHandler(FileReader{}))
+	route.GET("/", func(ctx *gin.Context) {
 		posts, err := loadMarkdownPosts("./markdown")
 		if err != nil {
 			log.Fatal(err)
@@ -36,34 +36,14 @@ func main() {
 		})
 	})
 
-	mtx.Static("/static", "static")
-	mtx.Run(":8080")
-}
-
-type SlugRender interface {
-	Read(slug string) (string, error)
-}
-
-type FileReader struct{}
-
-func (fRead FileReader) Read(slug string) (string, error) {
-	fr, err := os.Open("markdown/" + slug + ".md")
-	if err != nil {
-		return "", err
-	}
-	defer fr.Close()
-	b, err := io.ReadAll(fr)
-
-	if err != nil {
-		return "", err
-	}
-
-	return string(b), nil
+	route.Static("/static", "static")
+	route.Run(":8080")
 }
 
 type PostData struct {
 	Title                   string `yaml:"Title"`
 	Slug                    string `yaml:"Slug"`
+	Date                    string `yaml:"Date"`
 	Description             string `yaml:"Description"`
 	Order                   int    `yaml:"Order"`
 	MetaDescription         string `yaml:"MetaDescription"`
@@ -79,50 +59,25 @@ type Author struct {
 	Email string `yaml:"email"`
 }
 
-func mdToHTML(md []byte) []byte {
-	// Create a new Goldmark parser with extensions
-	mdParser := goldmark.New(
-		goldmark.WithParserOptions(
-			parser.WithAutoHeadingID(),
-		),
-		goldmark.WithExtensions(
-			extension.GFM,
-		),
-	)
-
-	// Convert Markdown to HTML
-	var buf bytes.Buffer
-	if err := mdParser.Convert(md, &buf); err != nil {
-		log.Fatal(err)
-		// Handle error, e.g., log it or return an empty result
-		return nil
-	}
-
-	return buf.Bytes()
+type SlugRender interface {
+	Read(slug string) (string, error)
 }
 
-func readAndParse(sl SlugRender, slug string) (PostData, string, error) {
-	var post PostData
+type FileReader struct{}
 
-	postMarkdown, err := sl.Read(slug)
+func (fRead FileReader) Read(slug string) (string, error) {
+	fileRead, err := os.Open("markdown/" + slug + ".md")
 	if err != nil {
-		return post, "", err
-	}
-
-	remainingMd, err := frontmatter.Parse(strings.NewReader(postMarkdown), &post)
-	if err != nil {
-		return post, "", err
-	}
-
-	return post, string(remainingMd), nil
-}
-
-func renderMarkdown(mdRenderer goldmark.Markdown, markdown string) (template.HTML, error) {
-	var buf bytes.Buffer
-	if err := mdRenderer.Convert([]byte(markdown), &buf); err != nil {
 		return "", err
 	}
-	return template.HTML(buf.String()), nil
+	defer fileRead.Close()
+	b, err := io.ReadAll(fileRead)
+
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }
 
 func loadMarkdownPosts(dir string) ([]PostData, error) {
@@ -134,33 +89,30 @@ func loadMarkdownPosts(dir string) ([]PostData, error) {
 			return err
 		}
 
-		// Check if it's a file and not a directory
+		// Check file .md
 		if !info.IsDir() && strings.HasSuffix(info.Name(), ".md") {
 			content, err := os.ReadFile(path)
 			if err != nil {
 				return err
 			}
 
-			// Assuming metadata is in YAML front matter
 			var postData PostData
 			var buf bytes.Buffer
 
 			// Split content to extract YAML front matter and Markdown body
 			split := strings.SplitN(string(content), "\n---\n", 2)
 			if len(split) > 1 {
-				// Parse YAML front matter
+				// Parse YAML front matter -> Convert Markdown to HTML -> Assign HTML content to PostData
 				err = yaml.Unmarshal([]byte(split[0]), &postData)
 				if err != nil {
 					return err
 				}
 
-				// Convert Markdown to HTML
 				err = md.Convert([]byte(split[1]), &buf)
 				if err != nil {
 					return err
 				}
 
-				// Assign HTML content to PostData
 				postData.Content = template.HTML(buf.String())
 			} else {
 				// Handle case where there is no front matter
@@ -172,7 +124,6 @@ func loadMarkdownPosts(dir string) ([]PostData, error) {
 				postData.Content = template.HTML(buf.String())
 			}
 
-			// Append postData to the posts slice
 			posts = append(posts, postData)
 		}
 
@@ -196,21 +147,31 @@ func PostHandler(sl SlugRender) gin.HandlerFunc {
 		),
 	)
 
-	return func(c *gin.Context) {
-		slug := c.Param("slug")
+	return func(ctx *gin.Context) {
+		slug := ctx.Param("slug")
+		postMarkdown, err := sl.Read(slug)
 
-		post, remainingMd, err := readAndParse(sl, slug)
 		if err != nil {
-			c.String(http.StatusNotFound, "Post not found")
+			ctx.String(http.StatusNotFound, "Post not found", err)
 			return
 		}
 
-		post.Content, err = renderMarkdown(mdRenderer, remainingMd)
+		var post PostData
+		remainingMd, err := frontmatter.Parse(strings.NewReader(postMarkdown), &post)
 		if err != nil {
-			c.String(http.StatusInternalServerError, "Error rendering markdown")
+			ctx.String(http.StatusInternalServerError, "Error parsing frontmatter", err)
 			return
 		}
 
-		c.HTML(http.StatusOK, "post.html", post)
+		var buf bytes.Buffer
+		err = mdRenderer.Convert([]byte(remainingMd), &buf)
+		if err != nil {
+			ctx.String(http.StatusInternalServerError, "Error rendering markdown")
+			return
+		}
+
+		post.Content = template.HTML(buf.String())
+
+		ctx.HTML(http.StatusOK, "post.html", post)
 	}
 }
