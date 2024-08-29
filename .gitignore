@@ -3,5 +3,5 @@ main
 node_modules/
 go_blog
 server
-air_toml
 temp/
+air.toml
