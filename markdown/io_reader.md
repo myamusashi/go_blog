@@ -1,7 +1,7 @@
 ---
 Title: Io golang
 Description: test posts
-date: 2024-08-23
+Date: 2024-08-23
 Parent: What is this a subpage of
 Slug: io_reader
 Order: 3
