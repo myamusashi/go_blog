@@ -1,8 +1,10 @@
 main
+*.zip
 .env
 node_modules/
 static/css/output.css
 go_blog
 server
-temp/
+tmp/
 air.toml
+static/css/base.css

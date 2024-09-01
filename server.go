@@ -11,6 +11,7 @@ import (
 	"strings"
 
 	"github.com/adrg/frontmatter"
+	"github.com/gin-contrib/gzip"
 	"github.com/gin-gonic/gin"
 	"github.com/yuin/goldmark"
 	highlighting "github.com/yuin/goldmark-highlighting/v2"
@@ -21,6 +22,7 @@ import (
 func main() {
 	gin.SetMode(gin.ReleaseMode)
 	route := gin.Default()
+	route.Use(gzip.Gzip(gzip.DefaultCompression))
 
 	route.LoadHTMLGlob("templates/*")
 
@@ -45,13 +47,17 @@ type PostData struct {
 	Slug                    string `yaml:"Slug"`
 	Date                    string `yaml:"Date"`
 	Description             string `yaml:"Description"`
-	Order                   int    `yaml:"Order"`
 	MetaDescription         string `yaml:"MetaDescription"`
 	MetaPropertyTitle       string `yaml:"MetaPropertyTitle"`
 	MetaPropertyDescription string `yaml:"MetaPropertyDescription"`
 	MetaOgURL               string `yaml:"MetaOgURL"`
 	Author                  Author `yaml:"author"`
 	Content                 template.HTML
+}
+
+type PostPages struct {
+	Pages []PostData
+	Order int `yaml:"Order"`
 }
 
 type Author struct {

@@ -4,6 +4,7 @@ go 1.22.5
 
 require (
 	github.com/adrg/frontmatter v0.2.0
+	github.com/gin-contrib/gzip v1.0.1
 	github.com/gin-gonic/gin v1.10.0
 	github.com/yuin/goldmark v1.7.4
 	github.com/yuin/goldmark-highlighting/v2 v2.0.0-20230729083705-37449abec8cc
